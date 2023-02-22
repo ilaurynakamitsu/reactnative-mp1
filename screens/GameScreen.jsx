@@ -9,9 +9,25 @@ const names = Object.keys(nameToPic);
 
 export default function GameScreen() {
   // TODO: Declare and initialize state variables here, using "useState".
+  //useState gives reactive value and allows us to change value whenever we want
+  //change names on buttons
+  //change picutre
+  //change score/time
+
+  //how many  questions you have attempted (denominator)
+  const [total, setTotal] = useState(0)
+  //how many  questions you have correctly answered (Numerator)
+  const [correctguesses, setCorrectguesses] = useState(0)
+  //the current picture
+  const [picture, setPicture] = useState()
+  //a list of the four names
+  const [fournames, setNames] = useState([])
+  //the correct name
+  const [correctN, setCorrect] = useState()
+
 
   // State for the timer is handled for you.
-  const [timeLeft, setTimeLeft] = useState(5000);
+  const [timeLeft, setTimeLeft] = useState(5.0);
 
   // Called by the timer every 10 seconds
   const countDown = () => {
@@ -20,7 +36,9 @@ export default function GameScreen() {
       setTimeLeft(timeLeft - 10);
     } else {
       // Time has expired
-      // TODO: update appropriate state variables
+      // TODO: update appropriate state variables //ADDED!!!
+      // Not sure if need to update time left since it is already in get next round
+      setTotal(total+1);
     }
   };
 
@@ -43,14 +61,24 @@ export default function GameScreen() {
     }
     nameOptions = shuffle(nameOptions);
 
-    // TODO: Update state here.
+    // TODO: Update state here. //ADDED!
+    setNames(nameOptions);
+    setCorrect(correctName);
+    setPicture(correctImage);
 
+    //Done for me
     setTimeLeft(5000);
   };
 
   // Called when user taps a name option.
-  // TODO: Update correct # and total # state values.
-  const selectedNameChoice = (index) => {};
+  // TODO: Update correct # and total # state values. //ADDED!!!
+  const selectedNameChoice = (index) => {
+    setTotal(total+1)
+    if (index == fournames.indexOf(correctN)) {
+      setCorrectguesses(correctguesses+1);
+    }
+
+  };
 
   // Call the countDown() method every 10 milliseconds.
   useEffect(() => {
@@ -61,17 +89,19 @@ export default function GameScreen() {
   });
 
   // TODO: Finish this useEffect() hook such that we automatically
-  // get the next round when the appropriate state variable changes.
+  // get the next round when the appropriate state variable changes. //ADDED!!!
   useEffect(
     () => {
       getNextRound();
     },
     [
       /* TODO: Your State Variable Goes Here */
+      total //ADDED!
     ]
   );
 
   // Set up four name button components
+  // TODO: Use something from state here. (line 108) {fournames} //ADDED!!!
   const nameButtons = [];
   for (let i = 0; i < 4; i++) {
     const j = i;
@@ -83,7 +113,7 @@ export default function GameScreen() {
         onPress={() => selectedNameChoice(j)}
       >
         <Text style={styles.buttonText}>
-          {/* TODO: Use something from state here. */}
+          {fournames[j]} 
         </Text>
       </TouchableOpacity>
     );
@@ -93,11 +123,32 @@ export default function GameScreen() {
 
   // Style & return the view.
   return (
-    <View>
+    
+    <View style={styles.container}>
+
+      <Text style = {styles.scoreText}>
+        Current score: {correctguesses}/{total}
+      </Text>
+
+      <Text style = {styles.timerText}>
+        Time Remaining: {timeRemainingStr}
+      </Text>
+
+      <View style={styles.imageView}>
+        <Image
+          source={picture}
+          style={styles.imageLogo}
+        />
+      </View>
       {/* TODO: Build out your UI using Text and Image components. */}
       {/* Hint: What does the nameButtons list above hold? 
           What types of objects is this list storing?
           Try to get a sense of what's going on in the for loop above. */}
+      {nameButtons[0]}
+      {nameButtons[1]}
+      {nameButtons[2]}
+      {nameButtons[3]}
+      
     </View>
   );
 }
